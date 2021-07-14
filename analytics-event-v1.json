@@ -41,20 +41,86 @@
       "regex": "^[a-zA-Z0-9_-]{1,32}$",
       "description": "Provides additional context for the action. Typically paired with the `CUSTOM` action. `regex: \"^[a-zA-Z0-9_-]{1,32}$\"`"
     },
-    "bot": {
-      "description": "Indicates whether the event is the result of bot activity.",
-      "default": null,
-      "oneOf": [
-        {
-          "type": "boolean",
-          "title" : "boolean",
-          "description": "Forces the event to be considered bot or not-bot traffic as indicated."
-        },        {
-          "const": null,
-          "title" : "null",
-          "description": "Indicates to automatically detect bot traffic from IP and user agent rules."
-        }
-      ]
+    "context": {
+      "bot": {
+        "description": "Indicates whether the event is the result of bot activity.",
+        "default": null,
+        "oneOf": [
+          {
+            "type": "boolean",
+            "title" : "boolean",
+            "description": "Forces the event to be considered bot or not-bot traffic as indicated."
+          },        {
+            "const": null,
+            "title" : "null",
+            "description": "Indicates to automatically detect bot traffic from IP and user agent rules."
+          }
+        ]
+      },
+      "internal": {
+        "type": "boolean",
+        "default": "false",
+        "description": "Indicates whether the event is the result of internal activity."
+      },
+      "ip": {
+        "type": "object",
+        "description": "Governs the handling of the IP address for the event.",
+        "default" : {
+          "address" : "$IP",
+          "algorithm" : "HASH"
+        },
+        "properties": {
+          "address": {
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "ipv4",
+                "title" : "IPv4",
+                "description": "The IPv4 of the IP associated with the event. `format: \"ipv4\"`"
+              },
+              {
+                "const": "$IP",
+                "title": "$IP",
+                "description": "Indicates to use the Source IP address from the IP header of the request. This IP address is only used if the `Yext-Opt-In: ip` header is present."
+              }
+            ]
+          },
+          "algorithm": {
+            "type": "string",
+            "enum": [
+              "HASH"
+            ],
+            "description": "The algorithm to use to anonymize the IP address after collection."
+          }
+        },
+        "required": [
+          "address",
+          "algorithm"
+        ],
+        "additionalProperties": false
+      },
+      "userAgent": {
+        "description": "The user agent string for the event.",
+        "default": "$User-Agent",
+        "oneOf": [
+          {
+            "type": "string",
+            "regex": "^[\\x20-\\x7F]+$",
+            "title": "string",
+            "description": "Specifies the user agent string for the event. `regex: \"^[\\x20-\\x7F]+$\"`"
+          },
+          {
+            "const": "$User-Agent",
+            "title": "$User-Agent",
+            "description": "Indicates to use the User-Agent header of the request."
+          },
+          {
+            "type": "null",
+            "title": "null",
+            "description": "Indicates that no user agent should be stored with the event."
+          }
+        ]
+      }
     },
     "custom" : {
       "type": "object",
@@ -112,7 +178,7 @@
         {
           "type": "object",
           "title" : "conversion",
-          "description": "The Conversion Tracking properties of the event. The event must be `CONVERSION`.",
+          "description": "The Conversion Tracking properties of the event. The event type must be `CONVERSION`.",
           "properties": {
             "conversion": {
               "type": "object",
@@ -146,48 +212,6 @@
       "type": "integer",
       "minimum": 1,
       "description": "The Yext entityId for the entity associated with the event."
-    },
-    "internal": {
-      "type": "boolean",
-      "default": "false",
-      "description": "Indicates whether the event is the result of internal activity."
-    },
-    "ip": {
-      "type": "object",
-      "description": "Governs the handling of the IP address for the event.",
-      "default" : {
-        "address" : "$IP",
-        "algorithm" : "MD5"
-      },
-      "properties": {
-        "address": {
-          "oneOf": [
-            {
-              "type": "string",
-              "format": "ipv4",
-              "title" : "IPv4",
-              "description": "The IPv4 of the IP associated with the event. `format: \"ipv4\"`"
-            },
-            {
-              "const": "$IP",
-              "title": "$IP",
-              "description": "Indicates to use the Source IP address from the IP header of the request. This IP address is only used if the `Yext-Opt-In: ip` header is present."
-            }
-          ]
-        },
-        "algorithm": {
-          "type": "string",
-          "enum": [
-            "MD5"
-          ],
-          "description": "The algorithm to use to anonymize the IP address after collection."
-        }
-      },
-      "required": [
-        "address",
-        "algorithm"
-      ],
-      "additionalProperties": false
     },
     "nonce": {
       "type": "string",
@@ -229,7 +253,7 @@
         {
           "const": "$Timestamp",
           "title": "$Timestamp",
-          "description": "Indicates to use the timestamp of the request as the event timestamp."
+          "description": "Indicates to use the time when the request was received as the event timestamp."
         }
       ]
     },
@@ -243,41 +267,25 @@
       ],
       "description": "The basic type of the event."
     },
-    "userAgent": {
-      "description": "The user agent string for the event.",
-      "default": "$User-Agent",
-      "oneOf": [
-        {
-          "type": "string",
-          "regex": "^[\\x20-\\x7F]+$",
-          "title": "string",
-          "description": "Specifies the user agent string for the event. `regex: \"^[\\x20-\\x7F]+$\"`"
-        },
-        {
-          "const": "$User-Agent",
-          "title": "$User-Agent",
-          "description": "Indicates to use the User-Agent header of the request."
-        },
-        {
-          "type": "null",
-          "title": "null",
-          "description": "Indicates that no user agent should be stored with the event."
-        }
-      ]
-    },
     "visitor": {
+      "type": "string",
+      "regex": "^[\\x21-\\x7F]{1,64}$",
+      "title" : "string",
+      "description": "Identifies the visitor associated with the event. `regex: \"^[\\x21-\\x7F]{1,64}$\"`"
+    },
+    "visitorMethod": {
+      "description": "The method used to identify the visitor.",
       "oneOf": [
         {
           "type": "string",
-          "regex": "^[\\x21-\\x7F]{1,64}$",
+          "regex": "^[a-zA-Z0-9_-]{1,16}$",
           "title" : "string",
-          "description": "Identifier of the visitor associated with the event. `regex: \"^[\\x21-\\x7F]{1,64}$\"`"
+          "description": "Specifies how the visitor was identified. `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
         },
         {
-          "type": "integer",
-          "minimum": 1,
-          "title": "Yext userId",
-          "description": "The Yext userId for the visitor associated with the event."
+          "const": "Yext",
+          "title": "Yext",
+          "description": "Indicates that the `visitor` was authenticated by Yext and the `visitor` property is a Yext userId."
         }
       ]
     }
