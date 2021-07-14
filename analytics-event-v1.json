@@ -1,0 +1,285 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schema.yext.com/api/analytics/event",
+  "$version": "1",
+  "type": "object",
+  "title": "Analytics Event",
+  "description": "Represents an event for analytics purposes.",
+  "required": [
+    "action",
+    "timestamp",
+    "type"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "https://schema.yext.com/api/analytics/event/v1"
+    },
+    "action": {
+      "type": "string",
+      "description": "The action which caused the event.",
+      "enum": [
+        "ADD_TO_CART",
+        "APPLY",
+        "BOOK",
+        "COLLAPSE",
+        "CUSTOM",
+        "DIRECTIONS",
+        "EXPAND",
+        "MESSAGE",
+        "ORDER",
+        "PHONE",
+        "SUBMIT",
+        "THUMBS_UP",
+        "THUMBS_DOWN",
+        "TITLE",
+        "WEBSITE"
+      ]
+    },
+    "actionName": {
+      "type": "string",
+      "regex": "^[a-zA-Z0-9_-]{1,32}$",
+      "description": "Provides additional context for the action. Typically paired with the `CUSTOM` action. `regex: \"^[a-zA-Z0-9_-]{1,32}$\"`"
+    },
+    "bot": {
+      "description": "Indicates whether the event is the result of bot activity.",
+      "default": null,
+      "oneOf": [
+        {
+          "type": "boolean",
+          "title" : "boolean",
+          "description": "Forces the event to be considered bot or not-bot traffic as indicated."
+        },        {
+          "const": null,
+          "title" : "null",
+          "description": "Indicates to automatically detect bot traffic from IP and user agent rules."
+        }
+      ]
+    },
+    "custom" : {
+      "type": "object",
+      "description" : "Up to 10 custom properties with string values. Property name `regex: \"^[a-zA-Z][a-zA-Z0-9_]{0,31}$\"`",
+      "maxProperties": 10,
+      "additionalProperties": true,
+      "propertyNames": {
+        "pattern": "^[a-zA-Z][a-zA-Z0-9_]{0,31}$"
+      },
+      "patternProperties": {
+        ".*": { "type": "string" }
+      }
+    },
+    "domain": {
+      "description": "The domain-specific properties of the event. An event can only belong to a single domain.",
+      "oneOf": [
+        {
+          "type": "object",
+          "title" : "answers",
+          "description": "The Answers properties of the event.",
+          "properties": {
+            "answers": {
+              "type": "object",
+              "properties": {
+                "experienceKey": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 50,
+                  "description": "The identifier of the Answers experience for the event."
+                },
+                "experienceVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 50,
+                  "description": "The identifier of the version of the Answers experience."
+                },
+                "searchId": {
+                  "type": "string",
+                  "regex": "^[a-zA-Z0-9-]{1,36}$",
+                  "description": "The search identifier of the Answers search. `regex: \"^[a-zA-Z0-9-]{1,36}$\"`"
+                }
+              },
+              "required": [
+                "experienceKey",
+                "experienceVersion"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "answers"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "title" : "conversion",
+          "description": "The Conversion Tracking properties of the event. The event must be `CONVERSION`.",
+          "properties": {
+            "conversion": {
+              "type": "object",
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "description": "The identifier of the conversion action triggered by the event."
+                },
+                "value": {
+                  "type": "number",
+                  "multipleOf": 0.0001,
+                  "description": "The value of the conversion, in the currency of the conversion action, to override the default value of the conversion action."
+                }
+              },
+              "required": [
+                "action"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "conversion"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "entity": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The Yext entityId for the entity associated with the event."
+    },
+    "internal": {
+      "type": "boolean",
+      "default": "false",
+      "description": "Indicates whether the event is the result of internal activity."
+    },
+    "ip": {
+      "type": "object",
+      "description": "Governs the handling of the IP address for the event.",
+      "default" : {
+        "address" : "$IP",
+        "algorithm" : "MD5"
+      },
+      "properties": {
+        "address": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "ipv4",
+              "title" : "IPv4",
+              "description": "The IPv4 of the IP associated with the event. `format: \"ipv4\"`"
+            },
+            {
+              "const": "$IP",
+              "title": "$IP",
+              "description": "Indicates to use the Source IP address from the IP header of the request. This IP address is only used if the `Yext-Opt-In: ip` header is present."
+            }
+          ]
+        },
+        "algorithm": {
+          "type": "string",
+          "enum": [
+            "MD5"
+          ],
+          "description": "The algorithm to use to anonymize the IP address after collection."
+        }
+      },
+      "required": [
+        "address",
+        "algorithm"
+      ],
+      "additionalProperties": false
+    },
+    "nonce": {
+      "type": "string",
+      "regex": "^[a-zA-Z0-9_-+/=]{1,36}$",
+      "description": "Deduplication ID for the event. Events from the same app with the same nonce will get de-duplicated. `regex: \"^[a-zA-Z0-9_-+/=]{1,36}$\"`"
+    },
+    "page": {
+      "description": "The URL of the page the event occurred on.",
+      "default": "$Referer",
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "title" : "URL",
+          "description": "Specifies the URL of the page the event occurred on."
+        },
+        {
+          "const": "$Referer",
+          "title": "$Referer",
+          "description": "Indicates to use the Referer header of the request."
+        }
+      ]
+    },
+    "session": {
+      "type": "string",
+      "regex": "^[a-zA-Z0-9_-+/=]{1,36}$",
+      "description": "Session ID for the event. `regex: \"^[a-zA-Z0-9_-+/=]{1,36}$\"`"
+    },
+    "timestamp": {
+      "description": "The timestamp at which the event occurred.",
+      "default" : "$Timestamp",
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date-time",
+          "title" : "ISO Timestamp",
+          "description": "Specifies the timestamp at which the event occurred. `format: \"date-time\"`"
+        },
+        {
+          "const": "$Timestamp",
+          "title": "$Timestamp",
+          "description": "Indicates to use the timestamp of the request as the event timestamp."
+        }
+      ]
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "CLICK",
+        "CONVERSION",
+        "IMPRESSION",
+        "VIEW"
+      ],
+      "description": "The basic type of the event."
+    },
+    "userAgent": {
+      "description": "The user agent string for the event.",
+      "default": "$User-Agent",
+      "oneOf": [
+        {
+          "type": "string",
+          "regex": "^[\\x20-\\x7F]+$",
+          "title": "string",
+          "description": "Specifies the user agent string for the event. `regex: \"^[\\x20-\\x7F]+$\"`"
+        },
+        {
+          "const": "$User-Agent",
+          "title": "$User-Agent",
+          "description": "Indicates to use the User-Agent header of the request."
+        },
+        {
+          "type": "null",
+          "title": "null",
+          "description": "Indicates that no user agent should be stored with the event."
+        }
+      ]
+    },
+    "visitor": {
+      "oneOf": [
+        {
+          "type": "string",
+          "regex": "^[\\x21-\\x7F]{1,64}$",
+          "title" : "string",
+          "description": "Identifier of the visitor associated with the event. `regex: \"^[\\x21-\\x7F]{1,64}$\"`"
+        },
+        {
+          "type": "integer",
+          "minimum": 1,
+          "title": "Yext userId",
+          "description": "The Yext userId for the visitor associated with the event."
+        }
+      ]
+    }
+  }
+}
