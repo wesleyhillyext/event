@@ -345,7 +345,7 @@
       "oneOf": [
         {
           "type": "object",
-          "title": "conversions",
+          "title": "Conversion Tracking",
           "description": "The Conversion Tracking properties of the event. The event type must be `CONVERSION`.",
           "properties": {
             "conversions": {
@@ -376,7 +376,7 @@
         },
         {
           "type": "object",
-          "title": "listings",
+          "title": "Listings",
           "description": "The Listings properties of the event.",
           "properties": {
             "listings": {
@@ -411,7 +411,7 @@
         },
         {
           "type": "object",
-          "title": "pages",
+          "title": "Pages",
           "description": "The Pages properties of the event.",
           "properties": {
             "pages": {
@@ -459,20 +459,6 @@
           },
           "required": [
             "pages"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "title": "answers0",
-          "description": "This property will be replaced in the future. Use the Answers SDK instead.",
-          "properties": {
-            "answers0": {
-              "type": "object"
-            }
-          },
-          "required": [
-            "answers0"
           ],
           "additionalProperties": false
         }
