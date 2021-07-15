@@ -105,6 +105,12 @@
             }
           ]
         },
+        "destination": {
+          "type": "string",
+          "format": "uri",
+          "title": "URL",
+          "description": "The URL of the page the event is directing the user to. `format: uri`"
+        },
         "device": {
           "default": "$auto",
           "description": "The device associated with the event.",
@@ -281,7 +287,7 @@
               "type": "string",
               "format": "uri",
               "title": "URL",
-              "description": "Specifies the URL of the page the event occurred on."
+              "description": "Specifies the URL of the page the event occurred on. `format: uri`"
             },
             {
               "const": "$auto",
