@@ -200,8 +200,8 @@
               "properties": {
                 "latitude": {
                   "type": "number",
-                  "minimum": -180,
-                  "maximum": 180,
+                  "minimum": -90,
+                  "maximum": 90,
                   "description": "The latitude, in degrees North."
                 },
                 "longitude": {
@@ -345,44 +345,6 @@
       "oneOf": [
         {
           "type": "object",
-          "title": "answers",
-          "description": "The Answers properties of the event.",
-          "properties": {
-            "answers": {
-              "type": "object",
-              "properties": {
-                "experienceKey": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 50,
-                  "description": "The identifier of the Answers experience for the event."
-                },
-                "experienceVersion": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 50,
-                  "description": "The identifier of the version of the Answers experience."
-                },
-                "searchId": {
-                  "type": "string",
-                  "regex": "^[a-zA-Z0-9-]{1,36}$",
-                  "description": "The search identifier of the Answers search. `regex: \"^[a-zA-Z0-9-]{1,36}$\"`"
-                }
-              },
-              "required": [
-                "experienceKey",
-                "experienceVersion"
-              ],
-              "additionalProperties": false
-            }
-          },
-          "required": [
-            "answers"
-          ],
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
           "title": "conversions",
           "description": "The Conversion Tracking properties of the event. The event type must be `CONVERSION`.",
           "properties": {
@@ -429,6 +391,11 @@
                   "type": "string",
                   "regex": "^[a-zA-Z0-9_-]{1,16}$",
                   "description": "Type of page where the event took place. `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
+                },
+                "target": {
+                  "type": "string",
+                  "regex": "^[a-zA-Z0-9_-]{1,16}$",
+                  "description": "Indicates which part of the page the user clicked on. `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
                 }
               },
               "required": [
@@ -492,6 +459,20 @@
           },
           "required": [
             "pages"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "title": "answers0",
+          "description": "This property will be replaced in the future. Use the Answers SDK instead.",
+          "properties": {
+            "answers0": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "answers0"
           ],
           "additionalProperties": false
         }
