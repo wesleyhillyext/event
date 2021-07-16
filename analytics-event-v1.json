@@ -105,6 +105,29 @@
             }
           ]
         },
+        "country": {
+          "default": "$auto",
+          "description": "The country of the visitor for the event, as a ISO 3166-1 alpha-2 country code.",
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 2,
+              "title": "ISO 3166-1 alpha-2",
+              "description": "Specifies the country for the event."
+            },
+            {
+              "const": "$auto",
+              "title": "$auto",
+              "description": "Indicates to automatically determine the country from the request's IP address, or the value of the `ip` property if specified."
+            },
+            {
+              "type": "null",
+              "title": "null",
+              "description": "Specifies that no country should be stored with the event."
+            }
+          ]
+        },
         "destination": {
           "type": "string",
           "format": "uri",
@@ -199,6 +222,7 @@
         },
         "location": {
           "default": "$auto",
+          "description": "The geographic coordinates of the visitor for the event.",
           "oneOf": [
             {
               "type": "object",
@@ -215,6 +239,11 @@
                   "minimum": -180,
                   "maximum": 180,
                   "description": "The longitude, in degrees East."
+                },
+                "radiusMeters": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "The accuracy radius of the coordinates, in meters."
                 }
               },
               "required": [
@@ -226,7 +255,7 @@
             {
               "const": "$auto",
               "title": "$auto",
-              "description": "Indicates to automatically determine the location from the IP address associated with the event."
+              "description": "Indicates to automatically determine the location from the request's IP address, or the value of the `ip` property if specified."
             },
             {
               "type": "null",
