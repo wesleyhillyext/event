@@ -190,35 +190,46 @@
             "address": "$auto",
             "algorithm": "HASH"
           },
-          "properties": {
-            "address": {
-              "oneOf": [
-                {
-                  "type": "string",
-                  "format": "ipv4",
-                  "title": "IPv4",
-                  "description": "Specifies the IPv4 address associated with the event. `format: \"ipv4\"`"
+          "oneOf": [
+            {
+              "type": "object",
+              "title": "IP",
+              "properties": {
+                "address": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "ipv4",
+                      "title": "IPv4",
+                      "description": "Specifies the IPv4 address associated with the event. `format: \"ipv4\"`"
+                    },
+                    {
+                      "const": "$auto",
+                      "title": "$auto",
+                      "description": "Indicates to use the Source IP address from the IP header of the request. This IP address is only used if the `Yext-Opt-In: ip` header is present."
+                    }
+                  ]
                 },
-                {
-                  "const": "$auto",
-                  "title": "$auto",
-                  "description": "Indicates to use the Source IP address from the IP header of the request. This IP address is only used if the `Yext-Opt-In: ip` header is present."
+                "algorithm": {
+                  "type": "string",
+                  "enum": [
+                    "HASH"
+                  ],
+                  "description": "The algorithm to use to anonymize the IP address after collection."
                 }
-              ]
-            },
-            "algorithm": {
-              "type": "string",
-              "enum": [
-                "HASH"
+              },
+              "required": [
+                "address",
+                "algorithm"
               ],
-              "description": "The algorithm to use to anonymize the IP address after collection."
+              "additionalProperties": false
+            },
+            {
+              "type": "null",
+              "title": "null",
+              "description": "Specifies that no IP address should be associated with the event."
             }
-          },
-          "required": [
-            "address",
-            "algorithm"
-          ],
-          "additionalProperties": false
+          ]
         },
         "location": {
           "default": "$auto",
@@ -539,26 +550,34 @@
       "description": "The basic type of the event."
     },
     "visitor": {
-      "type": "string",
-      "regex": "^[\\x20-\\x7E]{1,64}$",
-      "title": "string",
-      "description": "Identifies the visitor associated with the event. `regex: \"^[\\x20-\\x7E]{1,64}$\"`"
-    },
-    "visitorMethod": {
-      "description": "The method used to identify the visitor.",
-      "oneOf": [
-        {
+      "properties": {
+        "id": {
           "type": "string",
-          "regex": "^[a-zA-Z0-9_-]{1,16}$",
+          "regex": "^[\\x20-\\x7E]{1,64}$",
           "title": "string",
-          "description": "Specifies how the visitor was identified. `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
+          "description": "Identifies the visitor associated with the event. `regex: \"^[\\x20-\\x7E]{1,64}$\"`"
         },
-        {
-          "const": "Yext",
-          "title": "Yext",
-          "description": "Indicates that the `visitor` was authenticated by Yext and the `visitor` property is a Yext userId."
+        "idMethod": {
+          "description": "The method used to identify the visitor.",
+          "oneOf": [
+            {
+              "type": "string",
+              "regex": "^[a-zA-Z0-9_-]{1,16}$",
+              "title": "string",
+              "description": "Specifies how the visitor was identified. `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
+            },
+            {
+              "const": "Yext",
+              "title": "Yext",
+              "description": "Indicates that the `visitor` was authenticated by Yext and the `visitor` property is a Yext userId."
+            }
+          ]
         }
-      ]
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
     }
   }
 }
