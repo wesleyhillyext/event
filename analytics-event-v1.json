@@ -489,7 +489,7 @@
     },
     "tags": {
       "type": "object",
-      "description": "Up to 10 custom case-sensitive key-value pairs to associate with the event. Property name `regex: \"^[a-zA-Z][a-zA-Z0-9_]{0,31}$\"`",
+      "description": "Up to 10 custom key-value pairs to associate with the event. Keys are case-insensitive; values are case-sensitive. Property name `regex: \"^[a-zA-Z][a-zA-Z0-9_]{0,31}$\"`",
       "maxProperties": 10,
       "additionalProperties": {
         "type": "string",
