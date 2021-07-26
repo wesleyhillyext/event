@@ -16,30 +16,37 @@
       "const": "https://schema.yext.com/api/analytics/event/v1"
     },
     "action": {
-      "type": "string",
-      "description": "The action which caused the event.",
-      "enum": [
-        "ADD_TO_CART",
-        "APPLY",
-        "BOOK",
-        "COLLAPSE",
-        "CUSTOM",
-        "DIRECTIONS",
-        "EXPAND",
-        "MESSAGE",
-        "ORDER",
-        "PHONE",
-        "SUBMIT",
-        "THUMBS_UP",
-        "THUMBS_DOWN",
-        "TITLE",
-        "WEBSITE"
+      "oneOf": [
+        {
+          "type": "string",
+          "title": "Standard",
+          "caseSensitive": false,
+          "description": "The action which caused the event. `caseSensitive: false`",
+          "enum": [
+            "ADD_TO_CART",
+            "APPLY",
+            "BOOK",
+            "COLLAPSE",
+            "DIRECTIONS",
+            "EXPAND",
+            "MESSAGE",
+            "ORDER",
+            "PHONE",
+            "SUBMIT",
+            "THUMBS_UP",
+            "THUMBS_DOWN",
+            "TITLE",
+            "WEBSITE"
+          ]
+        },
+        {
+          "type": "string",
+          "regex": "^[Cc]_[a-zA-Z0-9_-]{1,30}$",
+          "title": "Custom",
+          "caseSensitive": false,
+          "description": "Specifies a custom action for the event, which must start with \"`C_`\". `caseSensitive: false`, `regex: \"^[Cc]_[a-zA-Z0-9_-]{1,30}$\"`"
+        }
       ]
-    },
-    "actionName": {
-      "type": "string",
-      "regex": "^[a-zA-Z0-9_-]{1,32}$",
-      "description": "Provides additional context for the action. Typically paired with the `CUSTOM` action. `regex: \"^[a-zA-Z0-9_-]{1,32}$\"`"
     },
     "context": {
       "type": "object",
@@ -102,29 +109,6 @@
               "type": "null",
               "title": "null",
               "description": "Specifies that no browser version should be stored with the event."
-            }
-          ]
-        },
-        "country": {
-          "default": "$auto",
-          "description": "The country of the visitor for the event, as a ISO 3166-1 alpha-2 country code.",
-          "oneOf": [
-            {
-              "type": "string",
-              "minLength": 2,
-              "maxLength": 2,
-              "title": "ISO 3166-1 alpha-2",
-              "description": "Specifies the country for the event."
-            },
-            {
-              "const": "$auto",
-              "title": "$auto",
-              "description": "Indicates to automatically determine the country from the request's IP address, or the value of the `ip` property if specified."
-            },
-            {
-              "type": "null",
-              "title": "null",
-              "description": "Specifies that no country should be stored with the event."
             }
           ]
         },
@@ -231,50 +215,6 @@
             }
           ]
         },
-        "location": {
-          "default": "$auto",
-          "description": "The geographic coordinates of the visitor for the event.",
-          "oneOf": [
-            {
-              "type": "object",
-              "title": "Coordinates",
-              "properties": {
-                "latitude": {
-                  "type": "number",
-                  "minimum": -90,
-                  "maximum": 90,
-                  "description": "The latitude, in degrees North."
-                },
-                "longitude": {
-                  "type": "number",
-                  "minimum": -180,
-                  "maximum": 180,
-                  "description": "The longitude, in degrees East."
-                },
-                "radiusMeters": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "description": "The accuracy radius of the coordinates, in meters."
-                }
-              },
-              "required": [
-                "latitude",
-                "longitude"
-              ],
-              "additionalProperties": false
-            },
-            {
-              "const": "$auto",
-              "title": "$auto",
-              "description": "Indicates to automatically determine the location from the request's IP address, or the value of the `ip` property if specified."
-            },
-            {
-              "type": "null",
-              "title": "null",
-              "description": "Specifies that no location should be stored with the event."
-            }
-          ]
-        },
         "os": {
           "default": "$auto",
           "description": "The operating system associated with the event.",
@@ -376,6 +316,65 @@
         }
       }
     },
+    "location": {
+      "default": "$auto",
+      "description": "The location information of visitor for the event.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "Location",
+          "description": "Specifies the location information of visitor for the event.",
+          "properties": {
+            "coordinates": {
+              "type": "object",
+              "description": "The geographic coordinates of the visitor for the event.",
+              "properties": {
+                "latitude": {
+                  "type": "number",
+                  "minimum": -90,
+                  "maximum": 90,
+                  "description": "The latitude, in degrees North."
+                },
+                "longitude": {
+                  "type": "number",
+                  "minimum": -180,
+                  "maximum": 180,
+                  "description": "The longitude, in degrees East."
+                },
+                "radiusMeters": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "The accuracy radius of the coordinates, in meters."
+                }
+              },
+              "required": [
+                "latitude",
+                "longitude"
+              ],
+              "additionalProperties": false
+            },
+            "country": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 2,
+              "caseSensitive": false,
+              "description": "The country of the visitor for the event, as a ISO 3166-1 alpha-2 country code. `caseSensitive: false`"
+            }
+          }
+        },
+        {
+          "const": "$auto",
+          "title": "$auto",
+          "description": "Indicates to automatically determine all location information from the request's IP address, or the value of the `ip` property if specified."
+        },
+        {
+          "type": "null",
+          "title": "null",
+          "description": "Specifies that no location information should be stored with the event."
+        }
+      ]
+    },
     "entity": {
       "type": "integer",
       "minimum": 1,
@@ -384,135 +383,113 @@
     "nonce": {
       "type": "string",
       "regex": "^[a-zA-Z0-9_-+/=]{1,36}$",
-      "description": "Deduplication ID for the event. Events from the same app with the same nonce will get de-duplicated. `regex: \"^[a-zA-Z0-9_-+/=]{1,36}$\"`"
+      "description": "Deduplication ID for the event. Events from the same app for the same business with the same nonce will get de-duplicated. `regex: \"^[a-zA-Z0-9_-+/=]{1,36}$\"`"
     },
     "product": {
-      "description": "The product-specific properties of the event. An event can only belong to a single product (or none).",
-      "oneOf": [
-        {
+      "description": "The product-specific properties of the event.",
+      "type": "object",
+      "properties": {
+        "conversions": {
           "type": "object",
           "title": "Conversion Tracking",
           "description": "The Conversion Tracking properties of the event. The event type must be `CONVERSION`.",
           "properties": {
-            "conversions": {
-              "type": "object",
-              "properties": {
-                "action": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 64,
-                  "description": "The identifier of the conversion action triggered by the event."
-                },
-                "value": {
-                  "type": "number",
-                  "multipleOf": 0.0001,
-                  "description": "The value of the conversion, in the currency of the conversion action, to override the default value of the conversion action."
-                }
-              },
-              "required": [
-                "action"
-              ],
-              "additionalProperties": false
+            "action": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "description": "The identifier of the conversion action triggered by the event."
+            },
+            "value": {
+              "type": "number",
+              "multipleOf": 0.0001,
+              "description": "The value of the conversion, in the currency of the conversion action, to override the default value of the conversion action."
             }
           },
           "required": [
-            "conversions"
+            "action"
           ],
           "additionalProperties": false
         },
-        {
+        "listings": {
           "type": "object",
           "title": "Listings",
           "description": "The Listings properties of the event.",
           "properties": {
-            "listings": {
-              "type": "object",
-              "properties": {
-                "publisher": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "description": "The publisherId of the publisher associated with the event."
-                },
-                "source": {
-                  "type": "string",
-                  "regex": "^[a-zA-Z0-9_-]{1,16}$",
-                  "description": "Type of page where the event took place. `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
-                },
-                "target": {
-                  "type": "string",
-                  "regex": "^[a-zA-Z0-9_-]{1,16}$",
-                  "description": "Indicates which part of the page the user clicked on. `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
-                }
-              },
-              "required": [
-                "publisher"
-              ],
-              "additionalProperties": false
+            "publisher": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "The publisherId of the publisher associated with the event."
+            },
+            "source": {
+              "type": "string",
+              "regex": "^[a-zA-Z0-9_-]{1,16}$",
+              "caseSensitive": false,
+              "description": "Type of page where the event took place. `caseSensitive: false`, `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
+            },
+            "target": {
+              "type": "string",
+              "regex": "^[a-zA-Z0-9_-]{1,16}$",
+              "caseSensitive": false,
+              "description": "Indicates which part of the page the user clicked on. `caseSensitive: false`, `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
             }
           },
           "required": [
-            "listings"
+            "publisher"
           ],
           "additionalProperties": false
         },
-        {
+        "pages": {
           "type": "object",
           "title": "Pages",
           "description": "The Pages properties of the event.",
           "properties": {
-            "pages": {
-              "type": "object",
-              "properties": {
-                "directory": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "description": "The directoryId."
-                },
-                "directoryNode": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "description": "The directoryNodeId."
-                },
-                "pageSet": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "description": "The pageSetId of the site associated with the event."
-                },
-                "site": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "description": "The siteId of the site associated with the event."
-                },
-                "type": {
-                  "enum": [
-                    "LANDING_PAGES"
-                  ],
-                  "description": "The type of Pages implementation."
-                },
-                "version": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 32,
-                  "description": "The version of the site."
-                }
-              },
-              "required": [
-                "site",
-                "version"
+            "directory": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "The directoryId."
+            },
+            "directoryNode": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "The directoryNodeId."
+            },
+            "pageSet": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "The pageSetId of the site associated with the event."
+            },
+            "site": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "The siteId of the site associated with the event."
+            },
+            "type": {
+              "enum": [
+                "LANDING_PAGES"
               ],
-              "additionalProperties": false
+              "caseSensitive": false,
+              "description": "The type of Pages implementation. `caseSensitive: false`"
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32,
+              "description": "The version of the site."
             }
           },
           "required": [
-            "pages"
+            "site",
+            "version"
           ],
           "additionalProperties": false
         }
-      ]
+      },
+      "additionalProperties": false
     },
     "tags": {
       "type": "object",
-      "description": "Up to 10 custom key-value pairs to associate with the event. Property name `regex: \"^[a-zA-Z][a-zA-Z0-9_]{0,31}$\"`",
+      "description": "Up to 10 custom case-sensitive key-value pairs to associate with the event. Property name `regex: \"^[a-zA-Z][a-zA-Z0-9_]{0,31}$\"`",
       "maxProperties": 10,
       "additionalProperties": {
         "type": "string",
@@ -547,7 +524,8 @@
         "IMPRESSION",
         "VIEW"
       ],
-      "description": "The basic type of the event."
+      "caseSensitive": false,
+      "description": "The basic type of the event. `caseSensitive: false`"
     },
     "visitor": {
       "properties": {
@@ -563,8 +541,9 @@
             {
               "type": "string",
               "regex": "^[a-zA-Z0-9_-]{1,16}$",
+              "caseSensitive": false,
               "title": "string",
-              "description": "Specifies how the visitor was identified. `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
+              "description": "Specifies how the visitor was identified. `caseSensitive: false`, `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
             },
             {
               "const": "Yext",
