@@ -16,6 +16,7 @@
       "const": "https://schema.yext.com/api/analytics/event/v1"
     },
     "action": {
+      "description": "The action which caused the event.",
       "oneOf": [
         {
           "type": "string",
@@ -24,18 +25,50 @@
           "description": "The action which caused the event. `caseSensitive: false`",
           "enum": [
             "ADD_TO_CART",
+            "ALL_TAB_NAVIGATION",
             "APPLY",
+            "AUTO_COMPLETE_SELECTION",
+            "BACKWARD_PAGINATE",
             "BOOK",
+            "BRAND_ICON",
+            "CALL_TO_ACTION",
+            "CASE_START",
+            "CASE_SUBMITTED",
             "COLLAPSE",
             "DIRECTIONS",
+            "EVENT",
             "EXPAND",
+            "FEATURED_MESSAGE",
+            "FILTERING_WITHIN_SECTION",
+            "FORWARD_PAGINATE",
+            "HEADER_LINKS",
+            "ITEM_IN_LIST",
+            "MAP_CARD",
+            "MAP_PIN",
+            "MENU",
             "MESSAGE",
             "ORDER",
+            "PAGINATE",
             "PHONE",
-            "SUBMIT",
-            "THUMBS_UP",
+            "POST",
+            "PRESET_PROMPT",
+            "PRODUCT",
+            "PROFILE",
+            "QUESTION_FOCUS",
+            "QUESTION_SUBMIT",
+            "REMOVED_FILTER",
+            "REVIEW",
+            "SCROLL_TO_BOTTOM_OF_PAGE",
+            "SEARCH_BAR_IMPRESSION",
+            "SEARCH_CLEAR_BUTTON",
             "THUMBS_DOWN",
+            "THUMBS_UP",
+            "TICKET_URL",
             "TITLE",
+            "VERTICAL_TAB_NAVIGATION",
+            "VERTICAL_VIEW_ALL",
+            "VOICE_START",
+            "VOICE_STOP",
             "WEBSITE"
           ]
         },
@@ -48,35 +81,20 @@
         }
       ]
     },
-    "context": {
+    "agent": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Information about the visitors device and browser.",
       "properties": {
-        "bot": {
-          "description": "Whether the event is the result of bot activity.",
-          "default": "$auto",
-          "oneOf": [
-            {
-              "type": "boolean",
-              "title": "boolean",
-              "description": "Specifies that the event should be considered bot or not-bot traffic as indicated."
-            },
-            {
-              "const": "$auto",
-              "title": "$auto",
-              "description": "Indicates to automatically detect bot traffic from IP and user agent rules."
-            }
-          ]
-        },
         "browser": {
           "default": "$auto",
           "description": "The browser associated with the event.",
           "oneOf": [
             {
               "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,32}$",
+              "regex": "^[\\x20-\\x7E]{1,128}$",
               "title": "string",
-              "description": "Specifies the browser for the event. `regex: \"^[\\x20-\\x7E]{1,32}$\"`"
+              "description": "Specifies the browser for the event. `regex: \"^[\\x20-\\x7E]{1,128}$\"`"
             },
             {
               "const": "$auto",
@@ -96,9 +114,9 @@
           "oneOf": [
             {
               "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,32}$",
+              "regex": "^[\\x20-\\x7E]{1,128}$",
               "title": "string",
-              "description": "Specifies the browser version for the event. `regex: \"^[\\x20-\\x7E]{1,32}$\"`"
+              "description": "Specifies the browser version for the event. `regex: \"^[\\x20-\\x7E]{1,128}$\"`"
             },
             {
               "const": "$auto",
@@ -112,21 +130,15 @@
             }
           ]
         },
-        "destination": {
-          "type": "string",
-          "format": "uri",
-          "title": "URL",
-          "description": "The URL of the page the event is directing the user to. `format: uri`"
-        },
         "device": {
           "default": "$auto",
           "description": "The device associated with the event.",
           "oneOf": [
             {
               "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,64}$",
+              "regex": "^[\\x20-\\x7E]{1,128}$",
               "title": "string",
-              "description": "Specifies the device for the event. `regex: \"^[\\x20-\\x7E]{1,64}$\"`"
+              "description": "Specifies the device for the event. `regex: \"^[\\x20-\\x7E]{1,128}$\"`"
             },
             {
               "const": "$auto",
@@ -146,9 +158,10 @@
           "oneOf": [
             {
               "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,64}$",
+              "regex": "^[\\x20-\\x7E]{1,32}$",
+              "caseSensitive": false,
               "title": "string",
-              "description": "Specifies the device class for the event. `regex: \"^[\\x20-\\x7E]{1,64}$\"`"
+              "description": "Specifies the device class for the event. `caseSensitive: false`, `regex: \"^[\\x20-\\x7E]{1,32}$\"`"
             },
             {
               "const": "$auto",
@@ -161,6 +174,101 @@
               "description": "Specifies that no device class should be stored with the event."
             }
           ]
+        },
+        "os": {
+          "default": "$auto",
+          "description": "The operating system associated with the event.",
+          "oneOf": [
+            {
+              "type": "string",
+              "regex": "^[\\x20-\\x7E]{1,128}$",
+              "title": "string",
+              "description": "Specifies the operating system for the event. `regex: \"^[\\x20-\\x7E]{1,128}$\"`"
+            },
+            {
+              "const": "$auto",
+              "title": "$auto",
+              "description": "Indicates to automatically determine the operating system from request headers, or the value of the `userAgent` property if specified."
+            },
+            {
+              "type": "null",
+              "title": "null",
+              "description": "Specifies that no operating system should be stored with the event."
+            }
+          ]
+        },
+        "osVersion": {
+          "default": "$auto",
+          "description": "The operating system version associated with the event.",
+          "oneOf": [
+            {
+              "type": "string",
+              "regex": "^[\\x20-\\x7E]{1,128}$",
+              "title": "string",
+              "description": "Specifies the operating system version for the event. `regex: \"^[\\x20-\\x7E]{1,128}$\"`"
+            },
+            {
+              "const": "$auto",
+              "title": "$auto",
+              "description": "Indicates to automatically determine the operating system version from request headers, or the value of the `userAgent` property if specified."
+            },
+            {
+              "type": "null",
+              "title": "null",
+              "description": "Specifies that no operating system version should be stored with the event."
+            }
+          ]
+        },
+        "userAgent": {
+          "description": "The user agent string for the event.",
+          "default": "$auto",
+          "oneOf": [
+            {
+              "type": "string",
+              "regex": "^[\\x20-\\x7E]+$",
+              "title": "string",
+              "description": "Specifies the user agent string for the event. `regex: \"^[\\x20-\\x7E]+$\"`"
+            },
+            {
+              "const": "$auto",
+              "title": "$auto",
+              "description": "Indicates to use the `User-Agent` header of the request."
+            },
+            {
+              "type": "null",
+              "title": "null",
+              "description": "Specifies that no user agent should be stored with the event."
+            }
+          ]
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Contextual information about the event.",
+      "properties": {
+        "bot": {
+          "description": "Whether the event is the result of bot activity.",
+          "default": "$auto",
+          "oneOf": [
+            {
+              "type": "boolean",
+              "title": "boolean",
+              "description": "Specifies that the event should be considered bot or not-bot traffic as indicated."
+            },
+            {
+              "const": "$auto",
+              "title": "$auto",
+              "description": "Indicates to automatically detect bot traffic from IP and user agent rules."
+            }
+          ]
+        },
+        "destination": {
+          "type": "string",
+          "format": "uri",
+          "title": "URL",
+          "description": "The URL of the page the event is directing the user to. `format: uri`"
         },
         "internal": {
           "type": "boolean",
@@ -215,50 +323,6 @@
             }
           ]
         },
-        "os": {
-          "default": "$auto",
-          "description": "The operating system associated with the event.",
-          "oneOf": [
-            {
-              "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,64}$",
-              "title": "string",
-              "description": "Specifies the operating system for the event. `regex: \"^[\\x20-\\x7E]{1,64}$\"`"
-            },
-            {
-              "const": "$auto",
-              "title": "$auto",
-              "description": "Indicates to automatically determine the operating system from request headers, or the value of the `userAgent` property if specified."
-            },
-            {
-              "type": "null",
-              "title": "null",
-              "description": "Specifies that no operating system should be stored with the event."
-            }
-          ]
-        },
-        "osVersion": {
-          "default": "$auto",
-          "description": "The operating system version associated with the event.",
-          "oneOf": [
-            {
-              "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,64}$",
-              "title": "string",
-              "description": "Specifies the operating system version for the event. `regex: \"^[\\x20-\\x7E]{1,64}$\"`"
-            },
-            {
-              "const": "$auto",
-              "title": "$auto",
-              "description": "Indicates to automatically determine the operating system version from request headers, or the value of the `userAgent` property if specified."
-            },
-            {
-              "type": "null",
-              "title": "null",
-              "description": "Specifies that no operating system version should be stored with the event."
-            }
-          ]
-        },
         "page": {
           "description": "The URL of the page the event occurred on.",
           "default": "$auto",
@@ -289,30 +353,8 @@
         },
         "session": {
           "type": "string",
-          "regex": "^[a-zA-Z0-9_-+/=]{1,36}$",
-          "description": "Session ID for the event. `regex: \"^[a-zA-Z0-9_-+/=]{1,36}$\"`"
-        },
-        "userAgent": {
-          "description": "The user agent string for the event.",
-          "default": "$auto",
-          "oneOf": [
-            {
-              "type": "string",
-              "regex": "^[\\x20-\\x7E]+$",
-              "title": "string",
-              "description": "Specifies the user agent string for the event. `regex: \"^[\\x20-\\x7E]+$\"`"
-            },
-            {
-              "const": "$auto",
-              "title": "$auto",
-              "description": "Indicates to use the `User-Agent` header of the request."
-            },
-            {
-              "type": "null",
-              "title": "null",
-              "description": "Specifies that no user agent should be stored with the event."
-            }
-          ]
+          "regex": "^[\\x20-\\x7E]{1,36}$",
+          "description": "Session ID for the event. `regex: \"^[\\x20-\\x7E]{1,36}$\"`"
         }
       }
     },
@@ -375,15 +417,10 @@
         }
       ]
     },
-    "entity": {
-      "type": "integer",
-      "minimum": 1,
-      "description": "The Yext entityId for the entity associated with the event."
-    },
     "nonce": {
       "type": "string",
-      "regex": "^[a-zA-Z0-9_-+/=]{1,36}$",
-      "description": "Deduplication ID for the event. Events from the same app for the same business with the same nonce will get de-duplicated. `regex: \"^[a-zA-Z0-9_-+/=]{1,36}$\"`"
+      "regex": "^[\\x20-\\x7E]{1,36}$",
+      "description": "Deduplication ID for the event. Events from the same app for the same business with the same nonce will get de-duplicated. `regex: \"^[\\x20-\\x7E]{1,36}$\"`"
     },
     "product": {
       "description": "The product-specific properties of the event.",
@@ -397,8 +434,9 @@
             "action": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 64,
-              "description": "The identifier of the conversion action triggered by the event."
+              "maxLength": 16,
+              "regex": "^[a-fA-F0-9]{16}$",
+              "description": "The identifier of the conversion action triggered by the event. `regex: \"^[a-fA-F0-9]{16}$\"`"
             },
             "value": {
               "type": "number",
@@ -408,6 +446,22 @@
           },
           "required": [
             "action"
+          ],
+          "additionalProperties": false
+        },
+        "knowledge": {
+          "type": "object",
+          "title": "Knowledge Graph",
+          "description": "The Knowledge Graph properties of the event.",
+          "properties": {
+            "entity": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "The Yext entityId for the entity associated with the event."
+            }
+          },
+          "required": [
+            "entity"
           ],
           "additionalProperties": false
         },
@@ -445,14 +499,16 @@
           "description": "The Pages properties of the event.",
           "properties": {
             "directory": {
-              "type": "integer",
-              "minimum": 1,
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
               "description": "The directoryId."
             },
-            "directoryNode": {
-              "type": "integer",
-              "minimum": 1,
-              "description": "The directoryNodeId."
+            "group": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "description": "The page group identifier."
             },
             "pageSet": {
               "type": "integer",
@@ -466,7 +522,10 @@
             },
             "type": {
               "enum": [
-                "LANDING_PAGES"
+                "CONSULTING",
+                "KNOWLEDGE_TAGS",
+                "SELF_SERVE",
+                "SITE"
               ],
               "caseSensitive": false,
               "description": "The type of Pages implementation. `caseSensitive: false`"
@@ -480,7 +539,7 @@
           },
           "required": [
             "site",
-            "version"
+            "type"
           ],
           "additionalProperties": false
         }
@@ -510,6 +569,13 @@
           "description": "Specifies the timestamp at which the event occurred. `format: \"date-time\"`"
         },
         {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 32500915200,
+          "title": "Epoch millisecond",
+          "description": "Specifies the timestamp at which the event occurred as the number of milliseconds since 1970-01-01T00:00:00Z UTC, ignoring leap seconds."
+        },
+        {
           "const": "$auto",
           "title": "$auto",
           "description": "Indicates to use the time when the request was received as the event timestamp."
@@ -522,6 +588,7 @@
         "CLICK",
         "CONVERSION",
         "IMPRESSION",
+        "OTHER",
         "VIEW"
       ],
       "caseSensitive": false,
