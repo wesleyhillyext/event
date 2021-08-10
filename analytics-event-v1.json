@@ -358,6 +358,11 @@
         }
       }
     },
+    "entity": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The Yext entityId for the entity associated with the event."
+    },
     "location": {
       "default": "$auto",
       "description": "The location information of visitor for the event.",
@@ -449,22 +454,6 @@
           ],
           "additionalProperties": false
         },
-        "knowledge": {
-          "type": "object",
-          "title": "Knowledge Graph",
-          "description": "The Knowledge Graph properties of the event.",
-          "properties": {
-            "entity": {
-              "type": "integer",
-              "minimum": 1,
-              "description": "The Yext entityId for the entity associated with the event."
-            }
-          },
-          "required": [
-            "entity"
-          ],
-          "additionalProperties": false
-        },
         "listings": {
           "type": "object",
           "title": "Listings",
@@ -502,18 +491,18 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 256,
-              "description": "The directoryId."
+              "description": "The directoryId for Consulting Pages."
             },
             "group": {
               "type": "string",
               "minLength": 1,
               "maxLength": 256,
-              "description": "The page group identifier."
+              "description": "The Entity Page Set for Consulting Pages."
             },
             "pageSet": {
               "type": "integer",
               "minimum": 1,
-              "description": "The pageSetId of the site associated with the event."
+              "description": "The pageSetId of the site associated with the event for Self-Serve Pages."
             },
             "site": {
               "type": "integer",
@@ -523,7 +512,6 @@
             "type": {
               "enum": [
                 "CONSULTING",
-                "KNOWLEDGE_TAGS",
                 "SELF_SERVE",
                 "SITE"
               ],
