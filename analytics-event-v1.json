@@ -243,125 +243,136 @@
         }
       }
     },
-    "context": {
-      "type": "object",
-      "additionalProperties": false,
-      "description": "Contextual information about the event.",
-      "properties": {
-        "bot": {
-          "description": "Whether the event is the result of bot activity.",
-          "default": "$auto",
-          "oneOf": [
-            {
-              "type": "boolean",
-              "title": "boolean",
-              "description": "Specifies that the event should be considered bot or not-bot traffic as indicated."
-            },
-            {
-              "const": "$auto",
-              "title": "$auto",
-              "description": "Indicates to automatically detect bot traffic from IP and user agent rules."
-            }
-          ]
-        },
-        "destination": {
-          "type": "string",
-          "format": "uri",
-          "title": "URL",
-          "description": "The URL of the page the event is directing the user to. `format: uri`"
-        },
-        "internal": {
+    "bot": {
+      "description": "Whether the event is the result of bot activity.",
+      "default": "$auto",
+      "oneOf": [
+        {
           "type": "boolean",
-          "default": "false",
-          "description": "Indicates whether the event is the result of internal activity."
+          "title": "boolean",
+          "description": "Specifies that the event should be considered bot or not-bot traffic as indicated."
         },
-        "ip": {
-          "type": "object",
-          "description": "The IP address for the event.",
-          "default": {
-            "address": "$auto",
-            "algorithm": "HASH"
-          },
-          "oneOf": [
-            {
-              "type": "object",
-              "title": "IP",
-              "properties": {
-                "address": {
-                  "oneOf": [
-                    {
-                      "type": "string",
-                      "format": "ipv4",
-                      "title": "IPv4",
-                      "description": "Specifies the IPv4 address associated with the event. `format: \"ipv4\"`"
-                    },
-                    {
-                      "const": "$auto",
-                      "title": "$auto",
-                      "description": "Indicates to use the Source IP address from the IP header of the request. This IP address is only used if the `Yext-Opt-In: ip` header is present."
-                    }
-                  ]
-                },
-                "algorithm": {
-                  "type": "string",
-                  "enum": [
-                    "HASH"
-                  ],
-                  "description": "The algorithm to use to anonymize the IP address after collection."
-                }
-              },
-              "required": [
-                "address",
-                "algorithm"
-              ],
-              "additionalProperties": false
-            },
-            {
-              "type": "null",
-              "title": "null",
-              "description": "Specifies that no IP address should be associated with the event."
-            }
-          ]
-        },
-        "page": {
-          "description": "The URL of the page the event occurred on.",
-          "default": "$auto",
-          "oneOf": [
-            {
-              "type": "string",
-              "format": "uri",
-              "title": "URL",
-              "description": "Specifies the URL of the page the event occurred on. `format: uri`"
-            },
-            {
-              "const": "$auto",
-              "title": "$auto",
-              "description": "Indicates to use the `Referer` header of the request."
-            },
-            {
-              "type": "null",
-              "title": "null",
-              "description": "Specifies that no page URL should be stored with the event."
-            }
-          ]
-        },
-        "referrer": {
-          "type": "string",
-          "format": "uri",
-          "title": "URL",
-          "description": "The URL of the page which the visitor came from prior to the event."
-        },
-        "session": {
-          "type": "string",
-          "regex": "^[\\x20-\\x7E]{1,36}$",
-          "description": "Session ID for the event. `regex: \"^[\\x20-\\x7E]{1,36}$\"`"
+        {
+          "const": "$auto",
+          "title": "$auto",
+          "description": "Indicates to automatically detect bot traffic from IP and user agent rules."
         }
-      }
+      ]
+    },
+    "conversions": {
+      "type": "object",
+      "title": "Conversion Tracking",
+      "description": "The Conversion Tracking properties of the event. The event type must be `CONVERSION`.",
+      "properties": {
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16,
+          "regex": "^[a-fA-F0-9]{16}$",
+          "description": "The identifier of the conversion action triggered by the event. `regex: \"^[a-fA-F0-9]{16}$\"`"
+        },
+        "value": {
+          "type": "number",
+          "multipleOf": 0.0001,
+          "description": "The value of the conversion, in the currency of the conversion action, to override the default value of the conversion action."
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "additionalProperties": false
+    },
+    "destination": {
+      "type": "string",
+      "format": "uri",
+      "title": "URL",
+      "description": "The URL of the page the event is directing the user to. `format: uri`"
     },
     "entity": {
       "type": "integer",
       "minimum": 1,
       "description": "The Yext entityId for the entity associated with the event."
+    },
+    "internal": {
+      "type": "boolean",
+      "default": "false",
+      "description": "Indicates whether the event is the result of internal activity."
+    },
+    "ip": {
+      "type": "object",
+      "description": "The IP address for the event.",
+      "default": {
+        "address": "$auto",
+        "algorithm": "HASH"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "title": "IP",
+          "properties": {
+            "address": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "format": "ipv4",
+                  "title": "IPv4",
+                  "description": "Specifies the IPv4 address associated with the event. `format: \"ipv4\"`"
+                },
+                {
+                  "const": "$auto",
+                  "title": "$auto",
+                  "description": "Indicates to use the Source IP address from the IP header of the request. This IP address is only used if the `Yext-Opt-In: ip` header is present."
+                }
+              ]
+            },
+            "algorithm": {
+              "type": "string",
+              "enum": [
+                "HASH"
+              ],
+              "description": "The algorithm to use to anonymize the IP address after collection."
+            }
+          },
+          "required": [
+            "address",
+            "algorithm"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null",
+          "title": "null",
+          "description": "Specifies that no IP address should be associated with the event."
+        }
+      ]
+    },
+    "listings": {
+      "type": "object",
+      "title": "Listings",
+      "description": "The Listings properties of the event.",
+      "properties": {
+        "publisher": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The publisherId of the publisher associated with the event."
+        },
+        "source": {
+          "type": "string",
+          "regex": "^[a-zA-Z0-9_-]{1,16}$",
+          "caseSensitive": false,
+          "description": "Type of page where the event took place. `caseSensitive: false`, `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
+        },
+        "target": {
+          "type": "string",
+          "regex": "^[a-zA-Z0-9_-]{1,16}$",
+          "caseSensitive": false,
+          "description": "Indicates which part of the page the user clicked on. `caseSensitive: false`, `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
+        }
+      },
+      "required": [
+        "publisher"
+      ],
+      "additionalProperties": false
     },
     "location": {
       "default": "$auto",
@@ -427,112 +438,87 @@
       "regex": "^[\\x20-\\x7E]{1,36}$",
       "description": "Deduplication ID for the event. Events from the same app for the same business with the same nonce will get de-duplicated. `regex: \"^[\\x20-\\x7E]{1,36}$\"`"
     },
-    "product": {
-      "description": "The product-specific properties of the event.",
+    "page": {
+      "description": "The URL of the page the event occurred on.",
+      "default": "$auto",
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "title": "URL",
+          "description": "Specifies the URL of the page the event occurred on. `format: uri`"
+        },
+        {
+          "const": "$auto",
+          "title": "$auto",
+          "description": "Indicates to use the `Referer` header of the request."
+        },
+        {
+          "type": "null",
+          "title": "null",
+          "description": "Specifies that no page URL should be stored with the event."
+        }
+      ]
+    },
+    "pages": {
       "type": "object",
+      "title": "Pages",
+      "description": "The Pages properties of the event.",
       "properties": {
-        "conversions": {
-          "type": "object",
-          "title": "Conversion Tracking",
-          "description": "The Conversion Tracking properties of the event. The event type must be `CONVERSION`.",
-          "properties": {
-            "action": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 16,
-              "regex": "^[a-fA-F0-9]{16}$",
-              "description": "The identifier of the conversion action triggered by the event. `regex: \"^[a-fA-F0-9]{16}$\"`"
-            },
-            "value": {
-              "type": "number",
-              "multipleOf": 0.0001,
-              "description": "The value of the conversion, in the currency of the conversion action, to override the default value of the conversion action."
-            }
-          },
-          "required": [
-            "action"
-          ],
-          "additionalProperties": false
+        "directory": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "The directoryId for Consulting Pages."
         },
-        "listings": {
-          "type": "object",
-          "title": "Listings",
-          "description": "The Listings properties of the event.",
-          "properties": {
-            "publisher": {
-              "type": "integer",
-              "minimum": 1,
-              "description": "The publisherId of the publisher associated with the event."
-            },
-            "source": {
-              "type": "string",
-              "regex": "^[a-zA-Z0-9_-]{1,16}$",
-              "caseSensitive": false,
-              "description": "Type of page where the event took place. `caseSensitive: false`, `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
-            },
-            "target": {
-              "type": "string",
-              "regex": "^[a-zA-Z0-9_-]{1,16}$",
-              "caseSensitive": false,
-              "description": "Indicates which part of the page the user clicked on. `caseSensitive: false`, `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
-            }
-          },
-          "required": [
-            "publisher"
-          ],
-          "additionalProperties": false
+        "group": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "The Entity Page Set for Consulting Pages."
         },
-        "pages": {
-          "type": "object",
-          "title": "Pages",
-          "description": "The Pages properties of the event.",
-          "properties": {
-            "directory": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 256,
-              "description": "The directoryId for Consulting Pages."
-            },
-            "group": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 256,
-              "description": "The Entity Page Set for Consulting Pages."
-            },
-            "pageSet": {
-              "type": "integer",
-              "minimum": 1,
-              "description": "The pageSetId of the site associated with the event for Self-Serve Pages."
-            },
-            "site": {
-              "type": "integer",
-              "minimum": 1,
-              "description": "The siteId of the site associated with the event."
-            },
-            "type": {
-              "enum": [
-                "CONSULTING",
-                "SELF_SERVE",
-                "SITE"
-              ],
-              "caseSensitive": false,
-              "description": "The type of Pages implementation. `caseSensitive: false`"
-            },
-            "version": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 32,
-              "description": "The version of the site."
-            }
-          },
-          "required": [
-            "site",
-            "type"
+        "pageSet": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The pageSetId of the site associated with the event for Self-Serve Pages."
+        },
+        "site": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The siteId of the site associated with the event."
+        },
+        "type": {
+          "enum": [
+            "CONSULTING",
+            "SELF_SERVE",
+            "SITE"
           ],
-          "additionalProperties": false
+          "caseSensitive": false,
+          "description": "The type of Pages implementation. `caseSensitive: false`"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "The version of the site."
         }
       },
+      "required": [
+        "site",
+        "type"
+      ],
       "additionalProperties": false
+    },
+    "referrer": {
+      "type": "string",
+      "format": "uri",
+      "title": "URL",
+      "description": "The URL of the page which the visitor came from prior to the event."
+    },
+    "session": {
+      "type": "string",
+      "regex": "^[\\x20-\\x7E]{1,36}$",
+      "description": "Session ID for the event. `regex: \"^[\\x20-\\x7E]{1,36}$\"`"
     },
     "tags": {
       "type": "object",
@@ -569,18 +555,6 @@
           "description": "Indicates to use the time when the request was received as the event timestamp."
         }
       ]
-    },
-    "type": {
-      "type": "string",
-      "enum": [
-        "CLICK",
-        "CONVERSION",
-        "IMPRESSION",
-        "OTHER",
-        "VIEW"
-      ],
-      "caseSensitive": false,
-      "description": "The basic type of the event. `caseSensitive: false`"
     },
     "visitor": {
       "properties": {
