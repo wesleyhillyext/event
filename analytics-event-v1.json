@@ -6,9 +6,7 @@
   "title": "Analytics Event",
   "description": "Represents an event for analytics purposes.",
   "required": [
-    "action",
-    "timestamp",
-    "type"
+    "action"
   ],
   "additionalProperties": false,
   "properties": {
