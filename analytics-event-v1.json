@@ -79,48 +79,19 @@
         }
       ]
     },
-    "answers": {
-      "type": "object",
-      "title": "Answers",
-      "description": "The Answers properties of the event.",
-      "properties": {
-        "experienceKey": {
-          "type": "string",
-          "minimum": 1,
-          "maximum": 50,
-          "description": "The key of the Answers experience associated with the event."
-        },
-        "experienceVersion": {
-          "type": "string",
-          "minimum": 1,
-          "maximum": 50,
-          "description": "The version label of the Answers experience associated with the event."
-        },
-        "queryId": {
-          "type": "string",
-          "regex": "^[a-zA-Z0-9-]{1,36}$",
-          "description": "The queryId of the Answers query associated with the event. `regex: \"^[a-zA-Z0-9-]{1,36}$\"`"
-        }
-      },
-      "required": [
-        "experienceKey",
-        "experienceVersion"
-      ],
-      "additionalProperties": false
-    },
     "bot": {
       "description": "Whether the event is the result of bot activity.",
       "default": "$auto",
       "oneOf": [
         {
-          "type": "boolean",
-          "title": "boolean",
-          "description": "Specifies that the event should be considered bot or not-bot traffic as indicated."
+          "const": "false",
+          "title": "false",
+          "description": "Specifies that the event should not be considered bot traffic."
         },
         {
           "const": "$auto",
           "title": "$auto",
-          "description": "Indicates to automatically detect bot traffic from IP and user agent rules."
+          "description": "Indicates to automatically detect whether this event originates from a bot."
         }
       ]
     },
@@ -573,6 +544,35 @@
       "type": "string",
       "format": "uri",
       "description": "The URL of the page which the visitor came from prior to the event."
+    },
+    "search": {
+      "type": "object",
+      "title": "Search",
+      "description": "The Yext Search properties of the event.",
+      "properties": {
+        "experienceKey": {
+          "type": "string",
+          "minimum": 1,
+          "maximum": 50,
+          "description": "The key of the Search experience associated with the event."
+        },
+        "experienceVersion": {
+          "type": "string",
+          "minimum": 1,
+          "maximum": 50,
+          "description": "The version label of the Search experience associated with the event."
+        },
+        "queryId": {
+          "type": "string",
+          "regex": "^[a-zA-Z0-9-]{1,36}$",
+          "description": "The queryId of the Search query associated with the event. `regex: \"^[a-zA-Z0-9-]{1,36}$\"`"
+        }
+      },
+      "required": [
+        "experienceKey",
+        "experienceVersion"
+      ],
+      "additionalProperties": false
     },
     "searchRank": {
       "type": "integer",
