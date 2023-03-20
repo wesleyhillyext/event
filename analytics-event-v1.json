@@ -257,28 +257,40 @@
         }
       }
     },
-    "conversions": {
+    "chat": {
       "type": "object",
-      "title": "Conversion Tracking",
-      "description": "The Conversion Tracking properties of the event.",
+      "title": "Chat",
+      "description": "The Yext Chat properties of the event.",
       "properties": {
-        "action": {
+        "chatbot": {
           "type": "string",
-          "minLength": 1,
-          "maxLength": 16,
-          "regex": "^[a-fA-F0-9]{16}$",
-          "description": "The identifier of the conversion action triggered by the event. `regex: \"^[a-fA-F0-9]{16}$\"`"
+          "minimum": 1,
+          "maximum": 50,
+          "description": "The ID of the Chatbot associated with the event."
         },
-        "value": {
-          "type": "number",
-          "multipleOf": 0.0001,
-          "description": "The value of the conversion, in the currency of the conversion action, to override the default value of the conversion action."
+        "conversationId": {
+          "type": "string",
+          "regex": "^[A-Z0-9]{1,26}$",
+          "description": "The conversationId (ULID) of the chat conversation associated with the event. `regex: \"^[A-Z0-9]{1,26}$\"`"
         }
       },
       "required": [
-        "action"
+        "chatbotKey",
+        "conversationId"
       ],
       "additionalProperties": false
+    },
+    "clientSdk": {
+      "type": "object",
+      "description": "For the Yext client SDKs involved in the event, this is an object mapping the names of those SDKs to the version labels of those SDKs.",
+      "maxProperties": 10,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 32
+      },
+      "propertyNames": {
+        "pattern": "^[a-zA-Z][a-zA-Z0-9_]{0,31}$"
+      }
     },
     "count": {
       "type": "integer",
@@ -286,18 +298,6 @@
       "maximum": 1000000000,
       "default": 1,
       "description": "When one record summarizes multiple events, this is the number of events the record represents. The event is treated as if it is duplicated this many times."
-    },
-    "customProperties": {
-      "type": "object",
-      "description": "Up to 10 custom key-value pairs to associate with the event. Keys are case-insensitive; values are case-sensitive. Property name `regex: \"^[a-zA-Z][a-zA-Z0-9_]{0,31}$\"`",
-      "maxProperties": 10,
-      "additionalProperties": {
-        "type": "string",
-        "maxLength": 64
-      },
-      "propertyNames": {
-        "pattern": "^[a-zA-Z][a-zA-Z0-9_]{0,31}$"
-      }
     },
     "destinationUrl": {
       "type": "string",
@@ -585,6 +585,18 @@
       "regex": "^[\\x20-\\x7E]{1,36}$",
       "description": "Session ID for the event. `regex: \"^[\\x20-\\x7E]{1,36}$\"`"
     },
+    "tags": {
+      "type": "object",
+      "description": "Up to 10 custom key-value pairs to associate with the event. Keys are case-insensitive; values are case-sensitive. Property name `regex: \"^[a-zA-Z][a-zA-Z0-9_]{0,31}$\"`",
+      "maxProperties": 10,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 64
+      },
+      "propertyNames": {
+        "pattern": "^[a-zA-Z][a-zA-Z0-9_]{0,31}$"
+      }
+    },
     "timestamp": {
       "description": "The timestamp at which the event occurred.",
       "default": "$auto",
@@ -608,6 +620,30 @@
           "description": "Indicates to use the time when the request was received as the event timestamp."
         }
       ]
+    },
+    "value": {
+      "type": "object",
+      "title": "Value",
+      "description": "The monetary value of the event",
+      "properties": {
+        "amount": {
+          "type": "number",
+          "multipleOf": 0.0001,
+          "description": "The monetary value of the event."
+        },
+        "currency": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 3,
+          "regex": "^[A-Z]{3}$",
+          "description": "The ISO 4217 currency code of the currency the value is expressed in. `regex: \"^[A-Z]{3}$\"`"
+        }
+      },
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "additionalProperties": false
     },
     "visitor": {
       "properties": {
