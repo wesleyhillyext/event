@@ -32,6 +32,9 @@
             "CALL_TO_ACTION",
             "CASE_START",
             "CASE_SUBMITTED",
+            "CHAT_IMPRESSION",
+            "CHAT_LINK_CLICK",
+            "CHAT_RESPONSE",
             "COLLAPSE",
             "DIRECTIONS",
             "EVENT",
@@ -72,20 +75,26 @@
         },
         {
           "type": "string",
-          "regex": "^[Cc]_[a-zA-Z0-9_-]{1,30}$",
+          "pattern": "^[Cc]_[a-zA-Z0-9_-]{1,30}$",
           "title": "Custom",
           "caseSensitive": false,
-          "description": "Specifies a custom action for the event, which must start with \"`C_`\". `caseSensitive: false`, `regex: \"^[Cc]_[a-zA-Z0-9_-]{1,30}$\"`"
+          "description": "Specifies a custom action for the event, which must start with \"`C_`\". `caseSensitive: false`, `pattern: \"^[Cc]_[a-zA-Z0-9_-]{1,30}$\"`"
         }
       ]
+    },
+    "authorization": {
+      "type": "string",
+      "description": "An alternative to using the Authorization HTTP header. If a value is provided, it will override any Authorization header. Api keys should be formatted like \"KEY <apiKey>\", access tokens should be formatted like \"Bearer <bearerToken>\"",
+      "minLength": 1,
+      "maxLength": 8192,
+      "pattern": "^(KEY|Bearer)\\s.+$"
     },
     "bot": {
       "description": "Whether the event is the result of bot activity.",
       "default": "$auto",
       "oneOf": [
         {
-          "const": "false",
-          "title": "false",
+          "type": "boolean",
           "description": "Specifies that the event should not be considered bot traffic."
         },
         {
@@ -99,6 +108,15 @@
       "type": "object",
       "additionalProperties": false,
       "description": "Information about the visitors device and browser.",
+      "default": {
+        "browser": "$auto",
+        "browserVersion": "$auto",
+        "device": "$auto",
+        "deviceClass": "$auto",
+        "os": "$auto",
+        "osVersion": "$auto",
+        "userAgent" : "$auto"
+      },
       "properties": {
         "browser": {
           "default": "$auto",
@@ -106,9 +124,9 @@
           "oneOf": [
             {
               "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,128}$",
+              "pattern": "(?!\\$auto$)(^[\\x20-\\x7E]{1,128}$)",
               "title": "string",
-              "description": "Specifies the browser for the event. `regex: \"^[\\x20-\\x7E]{1,128}$\"`"
+              "description": "Specifies the browser for the event. `pattern: \"^[\\x20-\\x7E]{1,128}$\"`"
             },
             {
               "const": "$auto",
@@ -128,9 +146,9 @@
           "oneOf": [
             {
               "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,128}$",
+              "pattern": "(?!\\$auto$)(^[\\x20-\\x7E]{1,128}$)",
               "title": "string",
-              "description": "Specifies the browser version for the event. `regex: \"^[\\x20-\\x7E]{1,128}$\"`"
+              "description": "Specifies the browser version for the event. `pattern: \"^[\\x20-\\x7E]{1,128}$\"`"
             },
             {
               "const": "$auto",
@@ -150,9 +168,9 @@
           "oneOf": [
             {
               "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,128}$",
+              "pattern": "(?!\\$auto$)(^[\\x20-\\x7E]{1,128}$)",
               "title": "string",
-              "description": "Specifies the device for the event. `regex: \"^[\\x20-\\x7E]{1,128}$\"`"
+              "description": "Specifies the device for the event. `pattern: \"^[\\x20-\\x7E]{1,128}$\"`"
             },
             {
               "const": "$auto",
@@ -172,10 +190,10 @@
           "oneOf": [
             {
               "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,32}$",
+              "pattern": "(?!\\$auto$)(^[\\x20-\\x7E]{1,32}$)",
               "caseSensitive": false,
               "title": "string",
-              "description": "Specifies the device class for the event. `caseSensitive: false`, `regex: \"^[\\x20-\\x7E]{1,32}$\"`"
+              "description": "Specifies the device class for the event. `caseSensitive: false`, `pattern: \"^[\\x20-\\x7E]{1,32}$\"`"
             },
             {
               "const": "$auto",
@@ -195,9 +213,9 @@
           "oneOf": [
             {
               "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,128}$",
+              "pattern": "(?!\\$auto$)(^[\\x20-\\x7E]{1,128}$)",
               "title": "string",
-              "description": "Specifies the operating system for the event. `regex: \"^[\\x20-\\x7E]{1,128}$\"`"
+              "description": "Specifies the operating system for the event. `pattern: \"^[\\x20-\\x7E]{1,128}$\"`"
             },
             {
               "const": "$auto",
@@ -217,9 +235,9 @@
           "oneOf": [
             {
               "type": "string",
-              "regex": "^[\\x20-\\x7E]{1,128}$",
+              "pattern": "(?!\\$auto$)(^[\\x20-\\x7E]{1,128}$)",
               "title": "string",
-              "description": "Specifies the operating system version for the event. `regex: \"^[\\x20-\\x7E]{1,128}$\"`"
+              "description": "Specifies the operating system version for the event. `pattern: \"^[\\x20-\\x7E]{1,128}$\"`"
             },
             {
               "const": "$auto",
@@ -239,9 +257,9 @@
           "oneOf": [
             {
               "type": "string",
-              "regex": "^[\\x20-\\x7E]+$",
+              "pattern": "(?!\\$auto$)(^[\\x20-\\x7E]{1,8192}$)",
               "title": "string",
-              "description": "Specifies the user agent string for the event. `regex: \"^[\\x20-\\x7E]+$\"`"
+              "description": "Specifies the user agent string for the event. `pattern: \"^[\\x20-\\x7E]{1,8192}$\"`"
             },
             {
               "const": "$auto",
@@ -262,21 +280,26 @@
       "title": "Chat",
       "description": "The Yext Chat properties of the event.",
       "properties": {
-        "chatbot": {
+        "botId": {
           "type": "string",
-          "minimum": 1,
-          "maximum": 50,
-          "description": "The ID of the Chatbot associated with the event."
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "The ID of the chat bot an event was tied to."
         },
         "conversationId": {
           "type": "string",
-          "regex": "^[A-Z0-9]{1,26}$",
-          "description": "The conversationId (ULID) of the chat conversation associated with the event. `regex: \"^[A-Z0-9]{1,26}$\"`"
+          "minLength": 48,
+          "maxLength": 48,
+          "description": "The ID of a conversation an event was tied to. Not all events are tied to a specific conversation. For example, both impressions are registered before the conversation begins. Must be 48 chars long"
+        },
+        "responseId": {
+          "type": "string",
+          "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$",
+          "description": "The ID of the response an event was tied to. Not all events are tied to a specific response, but if present it must be a valid ULID. This is analogous to queryId in Search. `pattern: \"^[0-9A-HJKMNP-TV-Z]{26}$\"`"
         }
       },
       "required": [
-        "chatbotKey",
-        "conversationId"
+        "botId"
       ],
       "additionalProperties": false
     },
@@ -299,6 +322,30 @@
       "default": 1,
       "description": "When one record summarizes multiple events, this is the number of events the record represents. The event is treated as if it is duplicated this many times."
     },
+    "customTags": {
+      "type": "object",
+      "description": "Up to 10 pairs matching custom string keys to string values to associate with the event. Keys are case-insensitive; values are case-sensitive. Property Name`pattern: \"^[a-zA-Z][a-zA-Z0-9_]{0,31}$\"`",
+      "maxProperties": 10,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 64
+      },
+      "propertyNames": {
+        "pattern": "^[a-zA-Z][a-zA-Z0-9_]{0,31}$"
+      }
+    },
+    "customValues": {
+      "type": "object",
+      "description": "Up to 10 pairs matching custom string keys to number values to associate with the event. Keys are case-insensitive. Property Name `pattern: \"^[a-zA-Z][a-zA-Z0-9_]{0,31}$\"`",
+      "maxProperties": 10,
+      "additionalProperties": {
+        "type": "string",
+        "maxLength": 64
+      },
+      "propertyNames": {
+        "pattern": "^[a-zA-Z][a-zA-Z0-9_]{0,31}$"
+      }
+    },
     "destinationUrl": {
       "type": "string",
       "format": "uri",
@@ -306,17 +353,30 @@
       "description": "The URL of the page the event is directing the visitor to. `format: uri`"
     },
     "entity": {
-      "type": "integer",
-      "minimum": 1,
-      "description": "The Yext entityId for the entity associated with the event."
+      "type": ["string","integer"],
+      "oneOf": [
+        {
+          "type": "string",
+          "title": "entityId",
+          "minLength": 1,
+          "maxLength": 38,
+          "description": "The mutable, customer-settable entity ID for the entity associated with the event. "
+        },
+        {
+          "type": "integer",
+          "title": "entityUid",
+          "minimum": 0,
+          "description": "The immutable entity ID set by the system. This is an internal ID."
+        }
+      ]
     },
     "internalUser": {
       "type": "boolean",
-      "default": "false",
+      "default":false,
       "description": "Indicates whether the event is the result of internal activity."
     },
     "ip": {
-      "type": "object",
+      "type": ["object","null"],
       "description": "The IP address for the event.",
       "default": {
         "address": "$auto",
@@ -363,43 +423,22 @@
         }
       ]
     },
-    "listings": {
-      "type": "object",
-      "title": "Listings",
-      "description": "The Listings properties of the event.",
-      "properties": {
-        "publisher": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "The publisherId of the publisher associated with the event."
-        },
-        "source": {
-          "type": "string",
-          "regex": "^[a-zA-Z0-9_-]{1,16}$",
-          "caseSensitive": false,
-          "description": "Type of page where the event took place. `caseSensitive: false`, `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
-        },
-        "target": {
-          "type": "string",
-          "regex": "^[a-zA-Z0-9_-]{1,16}$",
-          "caseSensitive": false,
-          "description": "Indicates which part of the page the visitor clicked on. `caseSensitive: false`, `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
-        }
-      },
-      "required": [
-        "publisher"
-      ],
-      "additionalProperties": false
+    "label": {
+      "type": "string",
+      "description": "A label assigned to the event, e.g. a CTA label.",
+      "minLength": 1,
+      "maxLength": 16777216
     },
     "locale": {
       "default": "$auto",
-      "description": "The locale of the visitor for the event.",
+      "description": "The locale of the user who generated the event.",
       "oneOf": [
         {
           "type": "string",
           "title": "Locale",
           "minLength": 1,
           "maxLength": 16,
+          "pattern": "^(?!(\\$auto)$).*$",
           "description": "Specifies the locale of the visitor for the event, e.g. `en-US`."
         },
         {
@@ -416,7 +455,7 @@
     },
     "location": {
       "default": "$auto",
-      "description": "The location of the visitor for the event.",
+      "description": "The location information of the visitor for the event.",
       "oneOf": [
         {
           "type": "object",
@@ -439,11 +478,6 @@
                   "minimum": -180,
                   "maximum": 180,
                   "description": "The longitude, in degrees East."
-                },
-                "radiusMeters": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "description": "The accuracy radius of the coordinates, in meters."
                 }
               },
               "required": [
@@ -475,8 +509,8 @@
     },
     "nonce": {
       "type": "string",
-      "regex": "^[\\x20-\\x7E]{1,36}$",
-      "description": "Deduplication ID for the event. Events from the same app for the same business with the same nonce will get de-duplicated. `regex: \"^[\\x20-\\x7E]{1,36}$\"`"
+      "pattern": "^[\\x20-\\x7E]{1,36}$",
+      "description": "Deduplication ID for the event. Events from the same app for the same business with the same nonce will get de-duplicated. `pattern: \"^[\\x20-\\x7E]{1,36}$\"`"
     },
     "pageUrl": {
       "description": "The URL of the page the event occurred on.",
@@ -500,102 +534,21 @@
         }
       ]
     },
-    "pages": {
-      "type": "object",
-      "title": "Pages",
-      "description": "The Pages properties of the event.",
-      "properties": {
-        "directory": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 256,
-          "description": "The directoryId for Consulting Pages."
-        },
-        "group": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 256,
-          "description": "The Entity Page Set for Consulting Pages."
-        },
-        "pageSet": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "The pageSetId of the site associated with the event for Self-Serve Pages."
-        },
-        "site": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "The siteId of the site associated with the event."
-        },
-        "version": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 32,
-          "description": "The version of the site."
-        }
-      },
-      "required": [
-        "site",
-        "type"
-      ],
-      "additionalProperties": false
-    },
     "referrerUrl": {
       "type": "string",
       "format": "uri",
       "description": "The URL of the page which the visitor came from prior to the event."
     },
-    "search": {
-      "type": "object",
-      "title": "Search",
-      "description": "The Yext Search properties of the event.",
-      "properties": {
-        "experienceKey": {
-          "type": "string",
-          "minimum": 1,
-          "maximum": 50,
-          "description": "The key of the Search experience associated with the event."
-        },
-        "experienceVersion": {
-          "type": "string",
-          "minimum": 1,
-          "maximum": 50,
-          "description": "The version label of the Search experience associated with the event."
-        },
-        "queryId": {
-          "type": "string",
-          "regex": "^[a-zA-Z0-9-]{1,36}$",
-          "description": "The queryId of the Search query associated with the event. `regex: \"^[a-zA-Z0-9-]{1,36}$\"`"
-        }
-      },
-      "required": [
-        "experienceKey",
-        "experienceVersion"
-      ],
-      "additionalProperties": false
-    },
-    "searchRank": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 1000000,
-      "description": "The 1-based position of the search result associated with the event."
-    },
-    "session": {
+    "searchTerm": {
       "type": "string",
-      "regex": "^[\\x20-\\x7E]{1,36}$",
-      "description": "Session ID for the event. `regex: \"^[\\x20-\\x7E]{1,36}$\"`"
+      "description": "The query entered by the user.",
+      "minLength": 1,
+      "maxLength": 16777216
     },
-    "tags": {
-      "type": "object",
-      "description": "Up to 10 custom key-value pairs to associate with the event. Keys are case-insensitive; values are case-sensitive. Property name `regex: \"^[a-zA-Z][a-zA-Z0-9_]{0,31}$\"`",
-      "maxProperties": 10,
-      "additionalProperties": {
-        "type": "string",
-        "maxLength": 64
-      },
-      "propertyNames": {
-        "pattern": "^[a-zA-Z][a-zA-Z0-9_]{0,31}$"
-      }
+    "sessionId": {
+      "type": "string",
+      "pattern": "^[\\x20-\\x7E]{1,36}$",
+      "description": "ID of the user session associated with event. `pattern: \"^[\\x20-\\x7E]{1,36}$\"`"
     },
     "timestamp": {
       "description": "The timestamp at which the event occurred.",
@@ -610,7 +563,7 @@
         {
           "type": "number",
           "minimum": 0,
-          "maximum": 32500915200,
+          "maximum": 3250091520000,
           "title": "Epoch millisecond",
           "description": "Specifies the timestamp at which the event occurred as the number of milliseconds since 1970-01-01T00:00:00Z UTC, ignoring leap seconds."
         },
@@ -635,8 +588,8 @@
           "type": "string",
           "minLength": 3,
           "maxLength": 3,
-          "regex": "^[A-Z]{3}$",
-          "description": "The ISO 4217 currency code of the currency the value is expressed in. `regex: \"^[A-Z]{3}$\"`"
+          "pattern": "^[A-Z]{3}$",
+          "description": "The ISO 4217 currency code of the currency the value is expressed in. `pattern: \"^[A-Z]{3}$\"`"
         }
       },
       "required": [
@@ -646,35 +599,22 @@
       "additionalProperties": false
     },
     "visitor": {
-      "properties": {
-        "id": {
+      "type": "object",
+      "description": "The visitor related to the event. Keys are visitor methods and values are visitor IDs. PropertyName pattern: \"^[a-zA-Z0-9_-]{1,16}$\". Value pattern: \"^[\\x20-\\x7E]{1,64}$\"",
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]{1,16}$": {
           "type": "string",
-          "regex": "^[\\x20-\\x7E]{1,64}$",
-          "title": "string",
-          "description": "Identifies the visitor associated with the event. `regex: \"^[\\x20-\\x7E]{1,64}$\"`"
-        },
-        "idMethod": {
-          "description": "The method used to identify the visitor.",
-          "oneOf": [
-            {
-              "type": "string",
-              "regex": "^[a-zA-Z0-9_-]{1,16}$",
-              "caseSensitive": false,
-              "title": "string",
-              "description": "Specifies how the visitor was identified. `caseSensitive: false`, `regex: \"^[a-zA-Z0-9_-]{1,16}$\"`"
-            },
-            {
-              "const": "Yext",
-              "title": "Yext",
-              "description": "Indicates that the `visitor` was authenticated by Yext and the `visitor` property is a Yext userId."
-            }
-          ]
+          "pattern": "^[\\x20-\\x7E]{1,64}$"
         }
       },
-      "required": [
-        "id"
-      ],
-      "additionalProperties": false
+      "maxProperties": 1
     }
+  },
+  "if": {
+    "properties": { "action": { "const": "CHAT_RESPONSE" } }
+  },
+  "then": {
+    "properties": { "chat": { "required": ["botId", "responseId"] } },
+    "required": ["chat"]
   }
 }
